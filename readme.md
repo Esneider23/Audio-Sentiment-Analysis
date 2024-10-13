@@ -29,16 +29,20 @@ git https://github.com/Esneider23/Audio-Sentiment-Analysis.git
 cd audio-sentiment-analysis
 ```
 
-### 2. Construir la imagen de Docker
+### 2. Crea el archivo .env
+
+En base al archivo .env.example construye el archivo .env el cual sera utilizado para las varibles de entorno
+
+### 3. Construir la imagen de Docker
 Ejecuta el siguiente comando para construir la imagen de Docker de la aplicación:
 ```bash
 docker build -t my-audio-app .
 ```
 
-### 3. Ejecutar la aplicación
+### 4. Ejecutar la aplicación
 Una vez que la imagen haya sido construida, ejecuta el siguiente comando para iniciar la aplicación en un contenedor Docker
 ```bash
 docker run -p 8000:8000 --env-file .env my-audio-app
 ```
-### 4. Entra a la App
+### 5. Entra a la App
 http://127.0.0.1:8000
