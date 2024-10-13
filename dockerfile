@@ -9,7 +9,7 @@ WORKDIR /app
 
 # Copiar los archivos necesarios
 COPY requirements.txt requirements.txt
-COPY .env .env
+COPY .env.example .env.example
 COPY run.py run.py
 COPY src/ src/
 

@@ -132,7 +132,7 @@ analyzeBtn.addEventListener("click", async () => {
     swalLoading.close();
 
     if (result.status === "success") {
-      message.innerText = `Sentiment found: ${result.data}`;
+      message.innerText = `The transcription is: ${transcription} Sentiment found: ${result.data}`;
     } else {
       message.innerText = "Error analyzing sentiment.";
     }
