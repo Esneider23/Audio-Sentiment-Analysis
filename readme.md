@@ -16,6 +16,8 @@ Antes de comenzar, asegúrate de tener los siguientes requisitos instalados en t
 
 - [Docker](https://www.docker.com/products/docker-desktop) (necesario para construir y ejecutar la aplicación).
 
+- [ffmpeg](https://www.ffmpeg.org/download.html#build-windows) (necesario para realizar las validaciones de los audios)
+
 ## Pasos para la instalación
 
 Sigue estos pasos para configurar y ejecutar la aplicación en tu máquina local.
@@ -59,3 +61,39 @@ En este segundo analisis se utiliza directamanete el audio que fue grabado se ut
 
 ### Resultados
 Luego de realizar ambos analisis puede existir diferencias las cuales son normales debido al tipo de analisis y la forma en como se procede puesto que mientras a nivel de analisis de texto no se tiene en cuenta la fuerza las palabras, entonaciones o cualquier modismo que pueda identificar fuertes sentimientos ya que al ser texto plano no se entienden diferencias claros, en el tipo de analisis por audio pueden existir cambios por sea por el ruido del mismo, o cualquier otro distrayente.
+
+
+## Si no funciona el Dockerfile estos son los pasos para la ejecución
+
+### 1. Clonar el repositorio
+
+Primero, clona el repositorio en tu máquina local utilizando Git:
+
+```bash
+git https://github.com/Esneider23/Audio-Sentiment-Analysis.git
+cd audio-sentiment-analysis
+```
+
+### 2. Crea el archivo .env
+
+En base al archivo .env.example construye el archivo .env el cual sera utilizado para las varibles de entorno
+
+### 3. Crea el env y activalo
+Crea la carpeta env dentro de tu proyecto con el comando
+```bash
+python -m venv env
+env\Scripts\Activate.bat
+```
+
+### 4. Instala los requeriments.txt
+```bash
+pip freeze > requirements.txt
+```
+
+### 5. Ejecuta
+```bash
+python run.py
+```
+
+### 6. Entra a la App
+http://127.0.0.1:8000
