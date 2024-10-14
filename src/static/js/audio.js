@@ -1,6 +1,9 @@
 const recordBtn = document.getElementById("recordBtn");
 const stopBtn = document.getElementById("stopBtn");
-const analyzeBtn = document.getElementById("analyzeBtn");
+const analyzeBtnTranscrition = document.getElementById(
+  "analyzeBtnTranscrition"
+);
+const analizeBtnAudio = document.getElementById("analizeBtnAudio");
 const audioPlayback = document.getElementById("audioPlayback");
 const message = document.getElementById("message");
 const waveform = document.getElementById("waveform");
@@ -10,6 +13,7 @@ let audioChunks = [];
 let recordingTime = 0;
 let timerInterval;
 let transcription = "";
+let isRecording = false;
 
 function formatTime(seconds) {
   const hrs = Math.floor(seconds / 3600);
@@ -39,6 +43,7 @@ function resetTimer() {
 recordBtn.addEventListener("click", async () => {
   resetTimer();
   audioChunks = [];
+  isRecording = true;
 
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   mediaRecorder = new MediaRecorder(stream);
@@ -55,15 +60,14 @@ recordBtn.addEventListener("click", async () => {
     const formData = new FormData();
     formData.append("audio_data", audioBlob, "audio.wav");
 
-    // Mostrar SweetAlert2 spinner
     const swalLoading = Swal.fire({
-      title: 'Transcribiendo...',
-      text: 'Por favor espera mientras procesamos tu grabación.',
+      title: "Transcribing...",
+      text: "Please wait while we process your recording.",
       allowOutsideClick: false,
-      showConfirmButton: false, // Ocultar botón de confirmación
+      showConfirmButton: false,
       willOpen: () => {
-        Swal.showLoading(); // Mostrar el loading spinner
-      }
+        Swal.showLoading();
+      },
     });
 
     const response = await fetch("/transcribe", {
@@ -73,7 +77,6 @@ recordBtn.addEventListener("click", async () => {
 
     const result = await response.json();
 
-    // Ocultar SweetAlert2 spinner
     swalLoading.close();
 
     console.log(
@@ -84,14 +87,18 @@ recordBtn.addEventListener("click", async () => {
     if (result.status === "success") {
       transcription = result.data;
       message.innerText = transcription;
-      analyzeBtn.disabled = false;
-      analyzeBtn.style.backgroundColor = "green";
-      analyzeBtn.style.color = "white";
-    }
-    if (result.status === "error") {
+      analyzeBtnTranscrition.disabled = false;
+      analyzeBtnTranscrition.style.backgroundColor = "green";
+      analyzeBtnTranscrition.style.color = "white";
+      analizeBtnAudio.disabled = false;
+      analizeBtnAudio.style.backgroundColor = "green";
+      analizeBtnAudio.style.color = "white";
+    } else {
       message.innerText = "Error transcribing audio.";
     }
+
     stopTimer();
+    isRecording = false;
   });
 
   mediaRecorder.start();
@@ -101,24 +108,33 @@ recordBtn.addEventListener("click", async () => {
 });
 
 stopBtn.addEventListener("click", () => {
-  mediaRecorder.stop();
-  recordBtn.disabled = false;
-  stopBtn.disabled = true;
+  if (mediaRecorder && isRecording) {
+    mediaRecorder.stop();
+    recordBtn.disabled = false;
+    stopBtn.disabled = true;
+    isRecording = false;
+    stopTimer();
+  }
 });
 
-analyzeBtn.addEventListener("click", async () => {
+analyzeBtnTranscrition.addEventListener("click", async () => {
+  if (isRecording) {
+    message.innerText = "It cannot be analyzed while recording.";
+    return;
+  }
+
   if (transcription) {
     const swalLoading = Swal.fire({
-      title: 'Analizando...',
-      text: 'Por favor espera mientras analizamos la transcripción.',
+      title: "Analizando...",
+      text: "Por favor espera mientras analizamos la transcripción.",
       allowOutsideClick: false,
-      showConfirmButton: false, // Ocultar botón de confirmación
+      showConfirmButton: false,
       willOpen: () => {
-        Swal.showLoading(); // Mostrar el loading spinner
-      }
+        Swal.showLoading();
+      },
     });
 
-    const response = await fetch("/analyze", {
+    const response = await fetch("/analyze-transcription", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -128,13 +144,68 @@ analyzeBtn.addEventListener("click", async () => {
 
     const result = await response.json();
 
-    // Ocultar SweetAlert2 spinner
     swalLoading.close();
 
     if (result.status === "success") {
-      message.innerText = `The transcription is: ${transcription} Sentiment found: ${result.data}`;
+      message.innerHTML = `The transcription is: ${transcription} <br> Sentiment found: ${result.data}`;
     } else {
       message.innerText = "Error analyzing sentiment.";
+    }
+  } else {
+    message.innerText = "No transcription available for analysis.";
+  }
+});
+
+analizeBtnAudio.addEventListener("click", async () => {
+  const formData = new FormData();
+  formData.append(
+    "audio_data",
+    new Blob(audioChunks, { type: "audio/wav" }),
+    "audio.wav"
+  );
+
+  if (isRecording) {
+    message.innerText = "It cannot be analyzed while recording.";
+    return;
+  }
+  if (transcription) {
+    const swalLoading = Swal.fire({
+      title: "Analyzing Emotion...",
+      text: "Please wait while we analyze your recording.",
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      willOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    try {
+      const response = await fetch("/predict-emotion", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      console.log(result);
+      swalLoading.close();
+      
+
+      if (result.status === "success") {
+        message.innerHTML = `The transcription is: ${transcription} <br> Emotion found: ${result.data}`;
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "Error analyzing emotion.",
+          icon: "error",
+        });
+      }
+    } catch (error) {
+      swalLoading.close();
+      Swal.fire({
+        title: "Error",
+        text: "An error occurred while processing the audio.",
+        icon: "error",
+      });
     }
   } else {
     message.innerText = "No transcription available for analysis.";

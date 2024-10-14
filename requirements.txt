@@ -30,3 +30,6 @@ tqdm==4.66.5
 typing_extensions==4.12.2
 urllib3==2.2.3
 uvicorn==0.24.0
+torch==2.4.1
+librosa==0.10.2.post1
+transformers==4.45.2

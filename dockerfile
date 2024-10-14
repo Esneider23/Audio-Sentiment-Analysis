@@ -7,17 +7,19 @@ RUN apt-get update && apt-get install -y ffmpeg
 # Establecer el directorio de trabajo
 WORKDIR /app
 
-# Copiar los archivos necesarios
+# Copiar únicamente requirements.txt primero para aprovechar la caché
 COPY requirements.txt requirements.txt
-COPY .env .env
-COPY run.py run.py
-COPY src/ src/
 
-# Instalar las dependencias
+# Instalar las dependencias antes de copiar todo el código
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Descargar el lexicon de nltk
 RUN python -m nltk.downloader vader_lexicon
 
-# Exponer el puerto si tu aplicación corre en uno específico (modificar según el caso)
+# Copiar el resto de los archivos de la aplicación
+COPY . .
+
+# Exponer el puerto
 EXPOSE 8000
 
 # Comando para ejecutar la aplicación

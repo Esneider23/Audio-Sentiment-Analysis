@@ -25,7 +25,7 @@ async def transcribe_audio(audio_data: UploadFile = File(...)):
     return await AudioController.transcribe_audio(audio_data)
 
 
-@views_router.post("/analyze")
+@views_router.post("/analyze-transcription")
 async def analyze_sentiment(request: Request):
     """
     Analyzes the sentiment of the given transcription.
@@ -33,4 +33,12 @@ async def analyze_sentiment(request: Request):
     data = await request.json()
     transcription = data.get("transcription")
     ia_controller = IAController()
-    return ia_controller.analyze_sentiment(transcription)
+    return ia_controller.analyze_sentiment_transcription(transcription)
+
+@views_router.post("/predict-emotion")
+async def predict_emotion(audio_data: UploadFile = File(...)):
+    """
+    Predicts the emotion from the audio file.
+    """
+    ia_controller = IAController()
+    return await ia_controller.analyze_sentiment_audio(audio_data)
