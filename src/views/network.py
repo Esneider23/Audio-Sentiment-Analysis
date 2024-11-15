@@ -36,6 +36,7 @@ async def analyze_sentiment(request: Request):
     ia_controller = IAController()
     return ia_controller.analyze_sentiment_transcription(transcription)
 
+
 @views_router.post("/predict-emotion")
 async def predict_emotion(audio_data: UploadFile = File(...)):
     """
@@ -50,5 +51,4 @@ async def websocket_endpoint(websocket: WebSocket):
     """
     The function handles the websocket connection.
     """
-    ws_controller = WebSocketController()
-    return await ws_controller.websocket_endpoint(websocket)
+    await websocket.accept()

@@ -43,14 +43,3 @@ class WebSocketController:
             except Exception as e:
                 # Send an error message to the client in case of failure
                 await sio.emit("error", {"message": str(e)}, to=sid)
-
-    # Method to handle the websocket endpoint
-    async def websocket_endpoint(self, websocket: WebSocket):
-        """
-        Manages the WebSocket connection and links it to Socket.IO
-        """
-        # Connect the client to Socket.IO through SocketManager
-        await socket_manager.connect(websocket)
-        # Wait and handle received messages
-        await socket_manager.receive(websocket)
-        return websocket
