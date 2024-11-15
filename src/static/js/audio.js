@@ -211,3 +211,50 @@ analizeBtnAudio.addEventListener("click", async () => {
     message.innerText = "No transcription available for analysis.";
   }
 });
+const socket = io("http://127.0.0.1:8000"); // Cambia la URL según tu configuración
+
+// Conexión al servidor WebSocket
+socket.on("connect", () => {
+  console.log("Conectado al servidor WebSocket");
+});
+
+socket.on("transcription", (data) => {
+  console.log("Transcripción recibida:", data.text);
+  message.innerText += `\n${data.text}`;
+});
+
+socket.on("error", (data) => {
+  console.error("Error recibido:", data.message);
+  message.innerText = "Error al procesar el audio.";
+});
+
+recordBtn.addEventListener("click", async () => {
+  audioChunks = [];
+  isRecording = true;
+
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+
+  mediaRecorder.addEventListener("dataavailable", (event) => {
+    if (event.data.size > 0 && isRecording) {
+      socket.emit("audio_chunk", event.data);
+    }
+  });
+
+  mediaRecorder.addEventListener("stop", () => {
+    isRecording = false;
+    console.log("Grabación detenida.");
+  });
+
+  mediaRecorder.start(250); // Graba fragmentos de 250ms
+  recordBtn.disabled = true;
+  stopBtn.disabled = false;
+});
+
+stopBtn.addEventListener("click", () => {
+  if (mediaRecorder && isRecording) {
+    mediaRecorder.stop();
+    recordBtn.disabled = false;
+    stopBtn.disabled = true;
+  }
+});

@@ -2,9 +2,10 @@
 The module contains the routes for the FastAPI application.
 """
 
-from fastapi import APIRouter, Request, UploadFile, File
+from fastapi import APIRouter, Request, UploadFile, File, WebSocket
 from .controllers.audio import AudioController
 from .controllers.ia import IAController
+from .controllers.websocket import WebSocketController
 
 views_router = APIRouter()
 
@@ -42,3 +43,12 @@ async def predict_emotion(audio_data: UploadFile = File(...)):
     """
     ia_controller = IAController()
     return await ia_controller.analyze_sentiment_audio(audio_data)
+
+
+@views_router.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    """
+    The function handles the websocket connection.
+    """
+    ws_controller = WebSocketController()
+    return await ws_controller.websocket_endpoint(websocket)

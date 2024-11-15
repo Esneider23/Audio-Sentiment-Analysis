@@ -33,3 +33,5 @@ uvicorn==0.24.0
 torch==2.4.1
 librosa==0.10.2.post1
 transformers==4.45.2
+fastapi-socketio==0.0.10
+socketio==0.2.1
