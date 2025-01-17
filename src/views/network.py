@@ -2,7 +2,7 @@
 The module contains the routes for the FastAPI application.
 """
 
-from fastapi import APIRouter, Request, UploadFile, File
+from fastapi import APIRouter, Request, UploadFile, File, Form
 from .controllers.audio import AudioController
 from .controllers.ia import IAController
 
@@ -34,6 +34,7 @@ async def analyze_sentiment(request: Request):
     transcription = data.get("transcription")
     ia_controller = IAController()
     return ia_controller.analyze_sentiment_transcription(transcription)
+
 
 @views_router.post("/predict-emotion")
 async def predict_emotion(audio_data: UploadFile = File(...)):

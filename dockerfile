@@ -20,7 +20,7 @@ RUN python -m nltk.downloader vader_lexicon
 COPY . .
 
 # Exponer el puerto
-EXPOSE 8000
+EXPOSE 4000
 
 # Comando para ejecutar la aplicación
 CMD ["python", "run.py"]
