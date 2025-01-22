@@ -14,6 +14,8 @@
         border: 1px solid #ccc;
         border-radius: 8px;
         background-color: #f9f9f9;
+        max-height: 300px; /* Set the maximum height */
+        overflow-y: auto;
       }
 
       .result-table {
@@ -21,7 +23,8 @@
         border-collapse: collapse;
       }
 
-      .result-table th, .result-table td {
+      .result-table th,
+      .result-table td {
         border: 1px solid #ddd;
         padding: 8px;
         text-align: left;
@@ -38,6 +41,48 @@
         border-radius: 8px;
         background-color: #e7f5ff;
         font-family: monospace;
+      }
+
+      .edit-input {
+        width: 90%;
+      }
+
+      /* Asegura que la tabla ocupe todo el ancho disponible */
+      #fields {
+        width: 100%;
+        table-layout: auto; /* Permite que las columnas se ajusten dinámicamente al contenido */
+        border-collapse: collapse; /* Elimina los espacios entre celdas */
+      }
+
+      #fields td {
+        padding: 8px;
+        border: 1px solid #ddd; /* Añade un borde sutil para las celdas */
+      }
+
+      #fields input[type="text"] {
+        width: 100%; /* Ensure the text field takes up the full width */
+        padding: 5px;
+        border: none; /* Remove the border for a cleaner look */
+        box-sizing: border-box; /* Ensure padding is included within the field's width */
+        font-family: inherit; /* Inherit font style for consistency */
+        background-color: transparent; /* Make the background transparent */
+        resize: none; /* Prevent resizing of the text area */
+        height: auto; /* Adjust height for longer inputs */
+        min-height: 30px; /* Ensure a minimum height for consistency */
+        overflow: hidden; /* Hide the scrollbars if needed */
+      }
+
+      /* Estilo para el botón de editar */
+      .edit-btn {
+        padding: 5px 10px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      .edit-btn:hover {
+        background-color: #45a049;
       }
     </style>
   </head>
@@ -69,10 +114,12 @@
             <tr>
               <th>Field Name</th>
               <th>Field Value</th>
+              <th>Edit</th>
             </tr>
           </thead>
           <tbody id="fields"></tbody>
         </table>
+        <button id="sendBtn">Enviar</button>
       </div>
     </div>
     <script src="../static/js/audio.js"></script>

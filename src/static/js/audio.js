@@ -4,26 +4,204 @@ const audioPlayback = document.getElementById("audioPlayback");
 const message = document.getElementById("message");
 const waveform = document.getElementById("waveform");
 
+
 let mediaRecorder;
 let audioChunks = [];
 let recordingTime = 0;
 let timerInterval;
-let transcription = "";
 let isRecording = false;
+let originalFields = []; // Initialize this variable to store original fields data
+let updatedFields = [];
+let transcription
+
+const fields_data = [
+  {
+    name: "Motivo de Consulta",
+    description: "Es la causa principal por la cual el paciente acude al médico.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Enfermedad Actual",
+    description: "Descripción lo más detallada posible de los síntomas o molestias principales asociados al motivo de consulta, incluyendo circunstancias que los exacerban o alivian.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Antecedentes Personales",
+    description: "Información sobre enfermedades sistémicas (como hipertensión o diabetes) o antecedentes oftalmológicos relevantes (cirugías o traumas oculares) propias. Ejemplo estándar: 'Hipertensión arterial controlada con medicación'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Antecedentes Familiares",
+    description: "Historia familiar de enfermedades sistémicas (como hipertensión o diabetes) o visuales (como glaucoma o ceguera). Ejemplo estándar: 'Madre con diabetes tipo 2'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "AVSC Lejana OD",
+    description: "Agudeza Visual Sin Corrección Lejana en el Ojo Derecho. Ejemplo estándar: 20/100.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "AVSC Lejana OI",
+    description: "Agudeza Visual Sin Corrección Lejana en el Ojo Izquierdo. Ejemplo estándar: 20/100.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Avsc Cercana OD",
+    description: "Agudeza Visual Sin Corrección Cercana en el Ojo Derecho. Ejemplo estándar: 20/20.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Avsc Cercana OI",
+    description: "Agudeza Visual Sin Corrección Cercana del Ojo Izquierdo. Ejemplo estándar: 20/20",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Auto-refracción OD",
+    description: "procedimiento automatizado para medir la capacidad refractiva del Ojo Derecho. Ejemplo estándar: +3.0-3.75*44 20/20",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Auto-refracción OI",
+    description: "procedimiento automatizado para medir la capacidad refractiva del Ojo Izquierdo. Ejemplo estándar: +3.0-3.75*44 20/20",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Tonometria OD",
+    description: "Es la Presión que se ejerce en el interior del Ojo Derecho, y es medida en milímetros de mercurio (mm Hg). Ejemplo: 7.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Tonometria OI",
+    description: "Es la Presión que se ejerce en el interior del Ojo Izquierdo, y es medida en milímetros de mercurio (mm Hg). Ejemplo: 7.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Anexos y Parpados OD",
+    description: "Examen de los anexos oculares y párpados del Ojo Derecho para detectar alteraciones como blefaritis o chalazión. Ejemplo estándar: 'Párpados simétricos, sin lesiones, sin secreciones'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Motilidad Ocular",
+    description: "Evaluación del movimiento de los ojos en todas las direcciones para determinar la funcionalidad de los músculos oculares y detectar posibles alteraciones como estrabismo o limitaciones en los movimientos. Ejemplo estándar: 'Movimientos completos y coordinados en todas las direcciones'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Biomicroscopia OD",
+    description: "Examen ocular que utiliza una lámpara de hendidura para evaluar estructuras como córnea, iris y cristalino en detalle del Ojo Derecho. Ejemplo estándar: 'Córnea transparente, sin lesiones, cámara anterior profunda, cristalino transparente'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Biomicroscopia OI",
+    description: "Examen ocular que utiliza una lámpara de hendidura para evaluar estructuras como córnea, iris y cristalino en detalle del Ojo Izquierdo. Ejemplo estándar: 'Córnea transparente, sin lesiones, cámara anterior profunda, cristalino transparente'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Gonioscopia OD",
+    description: "Examen oftalmológico que evalúa el ángulo de drenaje del ojo entre la córnea y el iris mediante un lente de contacto especial del Ojo Derecho. Este examen es clave para diagnosticar y clasificar el glaucoma. Ejemplo estándar: 'Ángulo abierto en 360 grados'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Gonioscopia OI",
+    description: "Examen oftalmológico que evalúa el ángulo de drenaje del ojo entre la córnea y el iris mediante un lente de contacto especial. Este examen es clave para diagnosticar y clasificar el glaucoma. Ejemplo estándar: 'Ángulo abierto en 360 grados'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Fondo de Ojo OD",
+    description: "Examina la retina, nervio óptico y vasos sanguíneos del Ojo Derecho, detectando enfermedades como retinopatía o glaucoma.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Fondo de Ojo OI",
+    description: "Examina la retina, nervio óptico y vasos sanguíneos del Ojo Izquierdo, detectando enfermedades como retinopatía o glaucoma.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Observaciones",
+    description: "Espacio para registrar comentarios adicionales, hallazgos relevantes o información complementaria sobre los resultados de las pruebas. Ejemplo estándar: 'No se preescribe correccion optica, se recomienda cicloplejia'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Plan y conducta",
+    description: "Detallan los pasos terapéuticos, diagnósticos o preventivos a seguir según la evaluación clínica, adaptados a las necesidades del paciente.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Procedimientos Ordenados",
+    description: "Registro de procedimientos médicos, exámenes o tratamientos recomendados para el paciente. Ejemplo estándar: 'Control de presión intraocular cada 6 meses', 'ABERROMETRIA OCULAR; CANTIDAD: 1', 'BIOMETRIA OCULAR; CANTIDAD: 1'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Medicamentos ordenados",
+    description: "Registro de medicamentos recetados para el paciente, incluyendo nombre, cantidad, frecuencia, tiempo. Ejemplo estándar: 'BRIMOLOL COLIRIO CANTIDAD:4; POSOLOGIA: APLICAR EN EL OD 1 GOTA CADA 12 HORAS USO PERMANENTE; TIEMPO: 120 DIA(S)'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Diagnósticos",
+    description: "Registro de los diagnósticos clínicos obtenidos tras la evaluación. Incluye un diagnóstico principal y hasta tres diagnósticos relacionados. Ejemplo estándar: Diagnóstico principal: 'Miopía'. Diagnósticos relacionados: 'Astigmatismo', 'Presbicia'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  }
+];
 
 function formatTime(seconds) {
-  const hrs = Math.floor(seconds / 3600);
-  const mins = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-  return `${hrs.toString().padStart(2, "0")}:${mins
-    .toString()
-    .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  const hrs = String(Math.floor(seconds / 3600)).padStart(2, "0");
+  const mins = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+  const secs = String(seconds % 60).padStart(2, "0");
+  return `${hrs}:${mins}:${secs}`;
 }
 
 function startTimer() {
   timerInterval = setInterval(() => {
-    recordingTime++;
-    waveform.innerText = formatTime(recordingTime);
+    waveform.innerText = formatTime(++recordingTime);
   }, 1000);
 }
 
@@ -36,272 +214,17 @@ function resetTimer() {
   waveform.innerText = formatTime(recordingTime);
 }
 
-recordBtn.addEventListener("click", async () => {
+async function handleRecording() {
   try {
     resetTimer();
     audioChunks = [];
     isRecording = true;
-
-    // Solicitar acceso al micrófono
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-    // Configurar MediaRecorder
     mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.addEventListener("dataavailable", event => audioChunks.push(event.data));
+    mediaRecorder.addEventListener("stop", handleStopRecording);
 
-    mediaRecorder.addEventListener("dataavailable", (event) => {
-      audioChunks.push(event.data);
-    });
-
-    mediaRecorder.addEventListener("stop", async () => {
-      const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      audioPlayback.src = audioUrl;
-
-      const formData = new FormData();
-      formData.append("file", audioBlob, "audio.wav");
-
-      const swalLoading = Swal.fire({
-        title: "Transcribing...",
-        text: "Please wait while we process your recording.",
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        willOpen: () => {
-          Swal.showLoading();
-        },
-      });
-
-      const fields_data = [
-        {
-            name: "paciente",
-            description: "Nombre del paciente",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "motivo_consulta",
-            description: "Motivo de la consulta",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Enfermedad_actual",
-            description: "Síntomas principales",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "antecedentes_personales",
-            description: "son una recopilación de información sobre la salud de una persona",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "antecedentes_familiares",
-            description: "registro de enfermedades y afecciones de salud de una persona y los familiares",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Avsc OD",
-            description: "Agudeza visual del ojo derecho sin corrección óptica. Ejemplo estándar: 20/100.",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Avsc OI",
-            description: "Agudeza Visual Sin Corrección del Ojo Izquierdo. Ejemplo estándar: 20/100.",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Avsc cercana OD",
-            description: "Agudeza Visual Sin Corrección Cercana del Ojo Derecho. Ejemplo estándar: 20/20.",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Avsc cercana OI",
-            description: "Agudeza Visual Sin Corrección Cercana del Ojo Izquierdo. Ejemplo estándar: 20/20",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Queratometría OD",
-            description: "Señalamiento del meridiano corneal más plano y más curvo del Ojo Derecho. Ejemplo estándar: 42.75/47.75 * 179.",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Queratometría OI",
-            description: "Señalamiento del meridiano corneal más plano y más curvo del Ojo Izquierdo. Ejemplo estándar: 42.75/47.75 * 179.",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "subjetivo OD",
-            description: "Señalamiento del meridiano corneal más plano y más curvo del Ojo Derecho. basado en la respuesta del pasiente Ejemplo estándar: -3.25-3*0 20/20",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "subjetivo OI",
-            description: "Señalamiento del meridiano corneal más plano y más curvo del Ojo Izquierdo. basado en la respuesta del paciente Ejemplo estándar: -3.25-3*0 20/20",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Retinoscopia OD",
-            description: "Observación de reflejo reteoicoopico para determinar el poder interno del globo ocular ejemplo estandar del ojo derecho: -2.75-3.0*0",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Retinoscopia OI",
-            description: "Observación de reflejo reteoicoopico para determinar el poder interno del globo ocular ejemplo estandar del ojo izquierdo: 2.75-3.0*0",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Motilidad Ocular",
-            description: "Evaluación del movimiento de los ojos en todas las direcciones para determinar la funcionalidad de los músculos oculares y detectar posibles alteraciones como estrabismo o limitaciones en los movimientos. Ejemplo estándar: 'Movimientos completos y coordinados en todas las direcciones'.",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Cover Test",
-            description: "Prueba clínica utilizada para evaluar la alineación ocular y detectar desviaciones como estrabismo o forias. Se realiza cubriendo y descubriendo los ojos de forma alterna para observar el movimiento de corrección. Ejemplo estándar: 'Ojos alineados sin movimientos de corrección'.",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Esteropsis",
-            description: "Evaluación de la percepción de profundidad y visión tridimensional utilizando pruebas como figuras estereoscópicas o gafas polarizadas. Ejemplo estándar: 'Percepción tridimensional normal a 40 cm'.",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Amsler",
-            description: "Prueba para detectar alteraciones en la mácula o el campo visual central mediante una cuadrícula observada a corta distancia. Ejemplo estándar: 'Sin distorsiones ni puntos ciegos'.",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Ishihara",
-            description: "Prueba para evaluar la percepción de los colores y detectar deficiencias como el daltonismo mediante láminas de puntos de colores que forman números o patrones. Ejemplo estándar: 'Percepción normal de los colores'.",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Observaciones",
-            description: "Espacio para registrar comentarios adicionales, hallazgos relevantes o información complementaria sobre los resultados de las pruebas. Ejemplo estándar: 'No se preescribe correccion optica, se recomienda cicloplejia'.",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "Diagnósticos",
-            description: "Registro de los diagnósticos clínicos obtenidos tras la evaluación. Incluye un diagnóstico principal y hasta tres diagnósticos relacionados. Ejemplo estándar: Diagnóstico principal: 'Miopía'. Diagnósticos relacionados: 'Astigmatismo', 'Presbicia'.",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "lensometria OD",
-            description: "Poder esférico y cilíndrico de un lente que corrige defectos refractivos del Ojo Derecho. Ejemplo estándar: -1.75-5.0*0",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "lensometria OI",
-            description: "formula o prescripcion de los lentes actuales ejemplo estandar ojo izquierdo: -2.50-0.50*170",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        },
-        {
-            name: "tipo de lente",
-            description: "tipo de lente prescrito ejemplo estandar: monofocales, bifocales, progresivos ",
-            data_type: "string",
-            is_dropdown: false,
-            options: []
-        }
-    ];
-
-      const fields = JSON.stringify(fields_data);
-
-      formData.append("fields", fields); // Como en el curl, se envía el JSON como string
-
-      const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ0ZXN0X3VzZXIiLCJleHAiOjE3MzU4Mjc1Mzd9.KlM_DehGp4squt4LAfZUfe-w3Hf_108vwEe0vHw9aSc";
-
-      try {
-        console.log("transmitiendo");
-        const response = await fetch(
-          "http://localhost:8000/api/v1/extract?worker=12",
-          {
-            method: "POST",
-            body: formData,
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        const result = await response.json();
-
-        swalLoading.close();
-        if (result.status === "success") {
-          const extractedFields =
-            result.data.information.extraction.extracted_fields;
-          const fieldsTableBody = document.getElementById("fields");
-          fieldsTableBody.innerHTML = ""; // Clear existing table rows
-
-          extractedFields.forEach((field) => {
-            const row = document.createElement("tr");
-
-            const fieldNameCell = document.createElement("td");
-            fieldNameCell.innerText = field.name;
-            row.appendChild(fieldNameCell);
-
-            const fieldValueCell = document.createElement("td");
-            fieldValueCell.innerText = field.value
-              ? field.value
-              : "Not available";
-            row.appendChild(fieldValueCell);
-
-            fieldsTableBody.appendChild(row);
-          });
-        } else {
-          message.innerText = "Error transcribing audio.";
-        }
-        // After receiving the response and ensuring it's successful
-      } catch (error) {
-        swalLoading.close();
-        message.innerText = "Error while processing the transcription.";
-        console.error("Transcription Error:", error);
-      }
-    });
-
-    // Iniciar grabación y el temporizador
     mediaRecorder.start();
     startTimer();
     recordBtn.disabled = true;
@@ -310,7 +233,172 @@ recordBtn.addEventListener("click", async () => {
     message.innerText = "Error accessing microphone. Please check permissions.";
     console.error("Microphone Access Error:", error);
   }
-});
+}
+
+async function handleStopRecording() {
+  try {
+    const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+    audioPlayback.src = URL.createObjectURL(audioBlob);
+
+    const formData = new FormData();
+    formData.append("file", audioBlob, "audio.wav");
+    formData.append("fields", JSON.stringify(fields_data));
+
+    const swalLoading = Swal.fire({
+      title: "Transcribing...",
+      text: "Please wait while we process your recording.",
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      willOpen: () => Swal.showLoading(),
+    });
+
+    const token = "YOUR_AUTH_TOKEN";
+    const response = await fetch("http://localhost:8000/api/v1/extract?worker=12", {
+      method: "POST",
+      body: formData,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const result = await response.json();
+    swalLoading.close();
+
+    if (result.status === "success") {
+      transcription = result.data.information.transcription.text;
+      displayExtractedFields(result.data.information.extraction.extracted_fields);
+    } else {
+      message.innerText = "Error transcribing audio.";
+    }
+  } catch (error) {
+    Swal.close();
+    message.innerText = "Error while processing the transcription.";
+    console.error("Transcription Error:", error);
+  }
+}
+
+function displayExtractedFields(extractedFields) {
+  const fieldsTableBody = document.getElementById("fields");
+  fieldsTableBody.innerHTML = ""; // Limpiar contenido anterior
+
+  // Guardar los campos originales sin modificarlos
+  originalFields = extractedFields.map(field => ({
+    name: field.name,
+    value: field.value ? field.value : ""
+  }));
+
+  extractedFields.forEach((field) => {
+    const row = document.createElement("tr");
+  
+    // Crear celda para el nombre del campo
+    const fieldNameCell = document.createElement("td");
+    fieldNameCell.innerText = field.name;
+    row.appendChild(fieldNameCell);
+  
+    // Crear celda para el valor del campo (presentado inicialmente como texto)
+    const fieldValueCell = document.createElement("td");
+    fieldValueCell.innerText = field.value ? field.value : " ";
+    row.appendChild(fieldValueCell);
+  
+    // Crear celda para el botón "Editar"
+    const editButtonCell = document.createElement("td");
+    const editButton = document.createElement("button");
+    editButton.innerText = "Editar";
+    editButton.classList.add("edit-btn");
+  
+    // Evento para habilitar/deshabilitar la edición
+    editButton.addEventListener("click", () => {
+      // Verificar si la celda contiene un textarea
+      const currentText = fieldValueCell.querySelector("textarea");
+      
+      if (currentText) {
+        // Si ya hay un textarea (modo de edición), guardar el nuevo valor
+        const newValue = currentText.value;
+        // Reemplazar el contenido del textarea con el nuevo valor
+        fieldValueCell.innerText = newValue; // Mostrar el nuevo valor en formato de texto
+        updateFieldValue(field.name, newValue); // Enviar al servidor
+  
+        editButton.innerText = "Editar"; // Cambiar el botón a "Editar"
+      } else {
+        // Si no hay un textarea (modo de visualización), cambiar a modo de edición
+        const textArea = document.createElement("textarea");
+        textArea.value = field.value ? field.value : "";  // Usar el valor original si está disponible
+        textArea.rows = 4;  // Ajusta el número de filas (tamaño del textarea)
+        textArea.cols = 30;  // Ajusta el número de columnas
+        fieldValueCell.innerHTML = ""; // Limpiar la celda
+        fieldValueCell.appendChild(textArea); // Agregar el textarea
+  
+        editButton.innerText = "Guardar"; // Cambiar el botón a "Guardar"
+      }
+    });
+  
+    editButtonCell.appendChild(editButton);
+    row.appendChild(editButtonCell);
+  
+    fieldsTableBody.appendChild(row);
+  });
+}
+
+async function updateFieldValue(fieldName, newValue) {
+  try {
+    // Buscar el campo original en originalFields
+    const originalField = originalFields.find(field => field.name === fieldName);
+    
+    if (originalField) {
+      // Si el valor fue modificado, agregarlo a updatedFields
+      const updatedField = {
+        name: fieldName,
+        value: newValue
+      };
+
+      // Comprobar si el campo ya está en la lista de actualizados
+      const existingUpdatedField = updatedFields.find(field => field.name === fieldName);
+      if (existingUpdatedField) {
+        existingUpdatedField.value = newValue; // Actualizar el valor si ya está en la lista
+      } else {
+        updatedFields.push(updatedField); // Si no está, agregarlo a la lista de actualizados
+      }
+    }
+
+    console.log("Campo actualizado:", fieldName);
+  } catch (error) {
+    console.error("Error al actualizar el campo:", error);
+  }
+}
+
+async function sendFields() {
+  try {
+    const formData = new FormData();
+    
+    // Enviar los campos originales
+    formData.append("original_field", JSON.stringify(originalFields));
+    
+    // Enviar los campos actualizados
+    formData.append("feedback_field", JSON.stringify(updatedFields));
+
+    formData.append("text_transcription", transcription);
+
+    const token = "your-token-here"; // Usa el token real para la autenticación
+
+    const response = await fetch("http://localhost:8000/api/v1/feedback", {
+      method: "POST",
+      body: formData,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const result = await response.json();
+
+    if (result.status === "success") {
+      console.log("Campos enviados correctamente!");
+    } else {
+      console.error("Error al enviar los campos:", result.message);
+    }
+  } catch (error) {
+    console.error("Error al enviar los campos:", error);
+  }
+}
+
+
+
+recordBtn.addEventListener("click", handleRecording);
 
 stopBtn.addEventListener("click", () => {
   if (mediaRecorder && isRecording) {
@@ -321,3 +409,5 @@ stopBtn.addEventListener("click", () => {
     stopTimer();
   }
 });
+
+document.getElementById("sendBtn").addEventListener("click", sendFields);
