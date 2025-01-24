@@ -44,10 +44,10 @@ docker build -t my-audio-app .
 ### 4. Ejecutar la aplicación
 Una vez que la imagen haya sido construida, ejecuta el siguiente comando para iniciar la aplicación en un contenedor Docker
 ```bash
-docker run -p 8000:8000 --env-file .env my-audio-app
+docker run -p 4000:4000 --env-file .env my-audio-app
 ```
 ### 5. Entra a la App
-http://127.0.0.1:8000
+http://127.0.0.1:4000
 
 
 ## A tener en cuenta
