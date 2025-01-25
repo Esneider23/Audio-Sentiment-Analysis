@@ -87,7 +87,7 @@ env\Scripts\Activate.bat
 
 ### 4. Instala los requeriments.txt
 ```bash
-pip freeze > requirements.txt
+ pip install -r requirements.txt
 ```
 
 ### 5. Ejecuta
@@ -96,4 +96,4 @@ python run.py
 ```
 
 ### 6. Entra a la App
-http://127.0.0.1:8000
+http://127.0.0.1:4000
