@@ -3,6 +3,7 @@ const stopBtn = document.getElementById("stopBtn");
 const audioPlayback = document.getElementById("audioPlayback");
 const message = document.getElementById("message");
 const waveform = document.getElementById("waveform");
+const customCheckbox = document.getElementById("controlCheckbox");
 
 
 let mediaRecorder;
@@ -44,6 +45,48 @@ const fields_data = [
     options: []
   },
   {
+    name: "AVSC Lejana OD",
+    description: "Agudeza Visual Sin Corrección Lejana en el Ojo Derecho. Ejemplo estándar: 20/100.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "AVSC Lejana OI",
+    description: "Agudeza Visual Sin Corrección Lejana en el Ojo Izquierdo. Ejemplo estándar: 20/100.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Avsc Cercana OD",
+    description: "Agudeza Visual Sin Corrección Cercana en el Ojo Derecho. Ejemplo estándar: 20/20.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Avsc Cercana OI",
+    description: "Agudeza Visual Sin Corrección Cercana del Ojo Izquierdo. Ejemplo estándar: 20/20",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Auto-refracción OD",
+    description: "procedimiento automatizado para medir la capacidad refractiva del Ojo Derecho. Ejemplo estándar: +3.0-3.75*44 20/20",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Auto-refracción OI",
+    description: "procedimiento automatizado para medir la capacidad refractiva del Ojo Izquierdo. Ejemplo estándar: +3.0-3.75*44 20/20",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
     name: "Tonometria OD",
     description: "Es la Presión que se ejerce en el interior del Ojo Derecho, y es medida en milímetros de mercurio (mm Hg). Ejemplo: 7.",
     data_type: "string",
@@ -60,6 +103,13 @@ const fields_data = [
   {
     name: "Anexos y Parpados OD",
     description: "Examen de los anexos oculares y párpados del Ojo Derecho para detectar alteraciones como blefaritis o chalazión. Ejemplo estándar: 'Párpados simétricos, sin lesiones, sin secreciones'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Motilidad Ocular",
+    description: "Evaluación del movimiento de los ojos en todas las direcciones para determinar la funcionalidad de los músculos oculares y detectar posibles alteraciones como estrabismo o limitaciones en los movimientos. Ejemplo estándar: 'Movimientos completos y coordinados en todas las direcciones'.",
     data_type: "string",
     is_dropdown: false,
     options: []
@@ -127,7 +177,90 @@ const fields_data = [
     is_dropdown: false,
     options: []
   },
-];
+  {
+    name: "Medicamentos ordenados",
+    description: "Registro de medicamentos recetados para el paciente, incluyendo nombre, cantidad, frecuencia, tiempo. Ejemplo estándar: 'BRIMOLOL COLIRIO CANTIDAD:4; POSOLOGIA: APLICAR EN EL OD 1 GOTA CADA 12 HORAS USO PERMANENTE; TIEMPO: 120 DIA(S)'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Diagnósticos",
+    description: "Registro de los diagnósticos clínicos obtenidos tras la evaluación. Incluye un diagnóstico principal y hasta tres diagnósticos relacionados. Ejemplo estándar: Diagnóstico principal: 'Miopía'. Diagnósticos relacionados: 'Astigmatismo', 'Presbicia'.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  }
+]
+
+
+
+const fields_data_control = [
+  {
+    name: "Motivo de Consulta",
+    description: "Es la causa principal por la cual el paciente acude al médico.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Subjetivo",
+    description: "Descripción detallada de los síntomas o molestias principales reportados por el paciente, incluyendo duración, intensidad y factores asociados.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Objetivo",
+    description: "Hallazgos clínicos observados durante la exploración física, incluyendo signos vitales, exámenes físicos y pruebas diagnósticas.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Resultados de Exámenes",
+    description: "Observaciones y hallazgos obtenidos de pruebas de laboratorio, estudios de imagen u otras evaluaciones diagnósticas recientes.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Análisis",
+    description: "Evaluación clínica del caso basada en los datos subjetivos y objetivos, incluyendo diagnósticos principales y secundarios.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Plan",
+    description: "Acciones a seguir, como tratamiento, procedimientos, recomendaciones y seguimiento.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Medicación",
+    description: "Lista de medicamentos recetados, incluyendo dosis y frecuencia.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Recomendaciones",
+    description: "Indicaciones generales relacionadas con hábitos, dieta, actividad física o cuidados específicos.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  },
+  {
+    name: "Seguimiento",
+    description: "Fecha y detalles sobre la próxima consulta o controles necesarios.",
+    data_type: "string",
+    is_dropdown: false,
+    options: []
+  }
+]
+
 
 function formatTime(seconds) {
   const hrs = String(Math.floor(seconds / 3600)).padStart(2, "0");
@@ -179,7 +312,10 @@ async function handleStopRecording() {
 
     const formData = new FormData();
     formData.append("file", audioBlob, "audio.wav");
-    formData.append("fields", JSON.stringify(fields_data));
+    if (customCheckbox.checked){
+      formData.append("fields", JSON.stringify(fields_data_control));
+    }
+    else{formData.append("fields", JSON.stringify(fields_data))};
 
     const swalLoading = Swal.fire({
       title: "Transcribing...",
@@ -324,9 +460,24 @@ async function sendFields() {
     const result = await response.json();
 
     if (result.status === "success") {
-      console.log("Campos enviados correctamente!");
+      Swal.fire({
+        title: "Success",
+        text: "Feedback sent successfully.",
+        icon: "success",
+        showCancelButton: true,
+        confirmButtonText: "Reload Page",
+        cancelButtonText: "Cancel",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.reload();
+        }
+      });
     } else {
-      console.error("Error al enviar los campos:", result.message);
+      Swal.fire({
+        title: "Error",
+        text: "There was a problem sending the feedback.",
+        icon: "error",
+      });
     }
   } catch (error) {
     console.error("Error al enviar los campos:", error);

@@ -6,101 +6,32 @@
     <title>Voice Recorder</title>
     <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
     <link rel="stylesheet" href="../static/css/index.css" />
-    <style>
-      .results-container {
-        margin-top: 20px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-        max-height: 300px; /* Set the maximum height */
-        overflow-y: auto;
-      }
-
-      .result-table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      .result-table th,
-      .result-table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-      }
-
-      .result-table th {
-        background-color: #f2f2f2;
-      }
-
-      .transcription {
-        margin-top: 20px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        background-color: #e7f5ff;
-        font-family: monospace;
-      }
-
-      .edit-input {
-        width: 90%;
-      }
-
-      /* Asegura que la tabla ocupe todo el ancho disponible */
-      #fields {
-        width: 100%;
-        table-layout: auto; /* Permite que las columnas se ajusten dinámicamente al contenido */
-        border-collapse: collapse; /* Elimina los espacios entre celdas */
-      }
-
-      #fields td {
-        padding: 8px;
-        border: 1px solid #ddd; /* Añade un borde sutil para las celdas */
-      }
-
-      #fields input[type="text"] {
-        width: 100%; /* Ensure the text field takes up the full width */
-        padding: 5px;
-        border: none; /* Remove the border for a cleaner look */
-        box-sizing: border-box; /* Ensure padding is included within the field's width */
-        font-family: inherit; /* Inherit font style for consistency */
-        background-color: transparent; /* Make the background transparent */
-        resize: none; /* Prevent resizing of the text area */
-        height: auto; /* Adjust height for longer inputs */
-        min-height: 30px; /* Ensure a minimum height for consistency */
-        overflow: hidden; /* Hide the scrollbars if needed */
-      }
-
-      /* Estilo para el botón de editar */
-      .edit-btn {
-        padding: 5px 10px;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        cursor: pointer;
-      }
-
-      .edit-btn:hover {
-        background-color: #45a049;
-      }
-    </style>
   </head>
   <body>
     <div class="recorder-container">
       <h1>Voice Recorder</h1>
       <div class="mic-icon">
         <div class="outer-circle"></div>
-        <img src="/src/static/img/microfono.png" alt="Microphone Icon" />
+        <img src="../static/img/microfono.png" alt="Microphone Icon" />
       </div>
       <div class="waveform" id="waveform">00:00:00</div>
-
+      <div class="control-checkbox">
+        <label for="controlCheckbox">
+          <input type="checkbox" id="controlCheckbox" name="controlCheckbox" />
+          Control
+        </label>
+      </div>
       <div class="controls">
-        <button id="recordBtn" class="control-btn start">
-          Start Recording
+        <button id="recordBtn" class="edit-btn">
+          <i class="fa-regular fa-circle-play"></i>
         </button>
-        <button id="stopBtn" class="control-btn stop" disabled>
-          Stop Recording
+        <button id="stopBtn" class="stop-btn">
+          <i class="fa-regular fa-circle-stop"></i>
         </button>
       </div>
 

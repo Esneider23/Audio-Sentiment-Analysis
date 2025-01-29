@@ -77,8 +77,8 @@ body {
 }
 
 .results-container.hidden {
-    display: none;
-  }
+  display: none;
+}
 
 .hidden {
   display: none;
@@ -118,7 +118,7 @@ audio {
   border: 1px solid #ccc;
   border-radius: 8px;
   background-color: #f9f9f9;
-  max-height: 300px;
+  max-height: 300px; /* Set the maximum height */
   overflow-y: auto;
 }
 
@@ -149,4 +149,73 @@ audio {
 
 .edit-input {
   width: 90%;
+}
+
+/* Asegura que la tabla ocupe todo el ancho disponible */
+#fields {
+  width: 100%;
+  table-layout: auto; /* Permite que las columnas se ajusten dinámicamente al contenido */
+  border-collapse: collapse; /* Elimina los espacios entre celdas */
+}
+
+#fields td {
+  padding: 8px;
+  border: 1px solid #ddd; /* Añade un borde sutil para las celdas */
+}
+
+#fields input[type="text"] {
+  width: 100%; /* Ensure the text field takes up the full width */
+  padding: 5px;
+  border: none; /* Remove the border for a cleaner look */
+  box-sizing: border-box; /* Ensure padding is included within the field's width */
+  font-family: inherit; /* Inherit font style for consistency */
+  background-color: transparent; /* Make the background transparent */
+  resize: none; /* Prevent resizing of the text area */
+  height: auto; /* Adjust height for longer inputs */
+  min-height: 30px; /* Ensure a minimum height for consistency */
+  overflow: hidden; /* Hide the scrollbars if needed */
+}
+
+/* Botón de editar con íconos */
+.edit-btn,
+.pause-btn,
+.stop-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #4caf50;
+}
+
+.edit-btn:hover,
+.pause-btn:hover,
+.stop-btn:hover {
+  color: #45a049;
+}
+
+/* Estilo específico para los íconos */
+.edit-btn i,
+.pause-btn i,
+.stop-btn i {
+  font-size: 20px;
+}
+
+.save-btn {
+  background-color: #4CAF50;  /* Verde */
+  color: white;  /* Texto blanco */
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 8px; /* Bordes redondeados */
+  transition: background-color 0.3s ease;
+}
+
+/* Efecto hover para el botón */
+.save-btn:hover {
+  background-color: #45a049; /* Color de fondo más oscuro al pasar el ratón */
 }
