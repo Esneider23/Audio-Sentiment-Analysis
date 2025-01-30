@@ -12,7 +12,7 @@ let recordingTime = 0;
 let timerInterval;
 let isRecording = false;
 let originalFields = []; // Initialize this variable to store original fields data
-let updatedFields = [];
+let feedback_field  = [];
 let transcription
 
 const fields_data = [
@@ -45,46 +45,11 @@ const fields_data = [
     options: []
   },
   {
-    name: "AVSC Lejana OD",
-    description: "Agudeza Visual Sin Corrección Lejana en el Ojo Derecho. Ejemplo estándar: 20/100.",
+    name: "Agudeza Visual",
+    description: "Incluye la Agudeza Visual Sin Corrección Lejana y la Auto-refracción para ambos ojos.Ejemplo: OD: -0.50-0.50*90 20/20, OI: -0.50-0.25*90 20/20 (DRA ACOSTA, Ene/2025)'",
     data_type: "string",
     is_dropdown: false,
-    options: []
-  },
-  {
-    name: "AVSC Lejana OI",
-    description: "Agudeza Visual Sin Corrección Lejana en el Ojo Izquierdo. Ejemplo estándar: 20/100.",
-    data_type: "string",
-    is_dropdown: false,
-    options: []
-  },
-  {
-    name: "Avsc Cercana OD",
-    description: "Agudeza Visual Sin Corrección Cercana en el Ojo Derecho. Ejemplo estándar: 20/20.",
-    data_type: "string",
-    is_dropdown: false,
-    options: []
-  },
-  {
-    name: "Avsc Cercana OI",
-    description: "Agudeza Visual Sin Corrección Cercana del Ojo Izquierdo. Ejemplo estándar: 20/20",
-    data_type: "string",
-    is_dropdown: false,
-    options: []
-  },
-  {
-    name: "Auto-refracción OD",
-    description: "procedimiento automatizado para medir la capacidad refractiva del Ojo Derecho. Ejemplo estándar: +3.0-3.75*44 20/20",
-    data_type: "string",
-    is_dropdown: false,
-    options: []
-  },
-  {
-    name: "Auto-refracción OI",
-    description: "procedimiento automatizado para medir la capacidad refractiva del Ojo Izquierdo. Ejemplo estándar: +3.0-3.75*44 20/20",
-    data_type: "string",
-    is_dropdown: false,
-    options: []
+    options: [],
   },
   {
     name: "Tonometria OD",
@@ -314,6 +279,8 @@ async function handleStopRecording() {
     formData.append("file", audioBlob, "audio.wav");
     if (customCheckbox.checked){
       formData.append("fields", JSON.stringify(fields_data_control));
+      
+
     }
     else{formData.append("fields", JSON.stringify(fields_data))};
 
@@ -409,29 +376,21 @@ function displayExtractedFields(extractedFields) {
     fieldsTableBody.appendChild(row);
   });
 }
-
 async function updateFieldValue(fieldName, newValue) {
   try {
-    // Buscar el campo original en originalFields
     const originalField = originalFields.find(field => field.name === fieldName);
-    
-    if (originalField) {
-      // Si el valor fue modificado, agregarlo a updatedFields
-      const updatedField = {
-        name: fieldName,
-        value: newValue
-      };
 
-      // Comprobar si el campo ya está en la lista de actualizados
-      const existingUpdatedField = updatedFields.find(field => field.name === fieldName);
-      if (existingUpdatedField) {
-        existingUpdatedField.value = newValue; // Actualizar el valor si ya está en la lista
+    if (originalField) {
+      const existingFieldIndex = feedback_field.findIndex(field => field.name === fieldName);
+
+      if (existingFieldIndex !== -1) {
+        feedback_field[existingFieldIndex].value = newValue;
       } else {
-        updatedFields.push(updatedField); // Si no está, agregarlo a la lista de actualizados
+        feedback_field.push({ ...originalField, value: newValue });
       }
     }
 
-    console.log("Campo actualizado:", fieldName);
+    console.log("feedback_field actualizado:", feedback_field);
   } catch (error) {
     console.error("Error al actualizar el campo:", error);
   }
@@ -440,13 +399,17 @@ async function updateFieldValue(fieldName, newValue) {
 async function sendFields() {
   try {
     const formData = new FormData();
-    
-    // Enviar los campos originales
-    formData.append("original_field", JSON.stringify(originalFields));
-    
-    // Enviar los campos actualizados
-    formData.append("feedback_field", JSON.stringify(updatedFields));
 
+    // Completar feedback_field con los campos originales que no se han modificado
+    originalFields.forEach(field => {
+      if (!feedback_field.some(f => f.name === field.name)) {
+        feedback_field.push({ ...field });
+      }
+    });
+
+    // Enviar los datos completos
+    formData.append("original_field", JSON.stringify(originalFields));
+    formData.append("feedback_field", JSON.stringify(feedback_field));
     formData.append("text_transcription", transcription);
 
     const token = "your-token-here"; // Usa el token real para la autenticación
@@ -483,7 +446,6 @@ async function sendFields() {
     console.error("Error al enviar los campos:", error);
   }
 }
-
 
 
 recordBtn.addEventListener("click", handleRecording);
