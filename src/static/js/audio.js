@@ -4,6 +4,7 @@ const audioPlayback = document.getElementById("audioPlayback");
 const message = document.getElementById("message");
 const waveform = document.getElementById("waveform");
 const customCheckbox = document.getElementById("controlCheckbox");
+const TeranCheckbox = document.getElementById("TeranCheckbox")
 
 
 let mediaRecorder;
@@ -226,6 +227,127 @@ const fields_data_control = [
   }
 ]
 
+const field_data_Teran = [ {
+  name: "Motivo de Consulta",
+  description: "Es la causa principal por la cual el paciente acude al médico. Ejemplo estándar: 'Dolor de cabeza'",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "Enfermedad Actual",
+  description: "Descripción lo más detallada posible de los síntomas o molestias principales asociados al motivo de consulta, incluyendo circunstancias que los exacerban o alivian. Ejemplo estándar: 'Paciente con dolor de cabeza de 2 días de evolución, asociado a visión borrosa y fotofobia'.",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "Antecedentes Personales",
+  description: "Información sobre enfermedades sistémicas (como hipertensión o diabetes) o antecedentes oftalmológicos relevantes (cirugías o traumas oculares) propias. Ejemplo estándar: 'Asma estacional, migraña, uso de lentes, Niega cirugías previas, Niega traumas oculares. Niega enfermedades sistémicas.'",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "Antecedentes Familiares",
+  description: "Historia familiar de enfermedades sistémicas (como hipertensión o diabetes) o visuales (como glaucoma o ceguera). Ejemplo estándar: 'Madre con diabetes tipo 2'., 'Padre con cataratas', 'Madre con glaucoma'.",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "Exámenes Médicos Oftalmológicos",
+  description: "Lista de exámenes médicos realizados para evaluar la salud ocular y la visión. Puede incluir pruebas como agudeza visual, presión intraocular, fondo de ojo, campimetría, topografía corneal, entre otros. Ejemplo estándar: 'la tomografía de nervio óptico en ambos ojos reporta dentro de límites normales con unos promedios de 117 y 118 micras', 'Campo visual que trae la paciente reporta confiabilidad buena dentro de límites normales en ambos ojos'.",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "Agudeza Visual",
+  description: "Incluye la Agudeza Visual Sin Corrección Lejana y la Auto-refracción para ambos ojos. Ejemplo estándar: 'OD: -0.50-0.50*90 20/20, OI: -0.50-0.25*90 20/20 (DRA ACOSTA, Ene/2025)'",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "PIO",
+  description: "Es la Presión que se ejerce en el interior del ojo, y es medida en milímetros de mercurio (mm Hg). Ejemplo estándar: 7/13mmHg.",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "BIOMICROSCOPIA OD",
+  description: "Examen ocular que utiliza una lámpara de hendidura para evaluar estructuras como córnea, iris y cristalino en detalle del Ojo Derecho. Ejemplo estándar: 'Cornea clara camara anterior formada amplia, vh 4, pupila redonda y reactiva sin rebeosis, medios transparentes, conjuntiva sana'",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "BIOMICROSCOPIA OI",
+  description: "Examen ocular que utiliza una lámpara de hendidura para evaluar estructuras como córnea, iris y cristalino en detalle del Ojo Izquierdo. Ejemplo estándar: 'Cornea clara camara anterior formada amplia, vh 4, pupila redonda y reactiva sin rebeosis, medios transparentes, conjuntiva sana'",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "Gonioscopia OD",
+  description: "Examen oftalmológico que evalúa el ángulo de drenaje del ojo entre la córnea y el iris mediante un lente de contacto especial del Ojo Derecho. Este examen es clave para diagnosticar y clasificar el glaucoma. Ejemplo estándar: 'Angulo grado 3, configuración plana de iris periferico, cristalino transparente, sin opacidades. +'",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "Gonioscopia OI",
+  description: "Examen oftalmológico que evalúa el ángulo de drenaje del ojo entre la córnea y el iris mediante un lente de contacto especial. Este examen es clave para diagnosticar y clasificar el glaucoma. Ejemplo estándar: 'Cornea clara Angulo grado 3 que abre a 4, configuración plana de iris periferico, cristalino transparente, sin opacidades. +'.",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "Fondo de Ojo OD",
+  description: "Examina la retina, nervio óptico y vasos sanguíneos del Ojo Derecho, detectando enfermedades como retinopatía o glaucoma. Ejemplo estándar: 'Discos de tamaño normal y forma ligeramente ovalada, exc: 0.6, ANR rosado con regla de ISNT conservado, atrofia pp leve, creciente escleral amplia, levemente inclinados, LC visible, No hemorragias, macula sana con buen brillo, retina adherida hasta donde se visualiza'",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "Fondo de Ojo OI",
+  description: "Examina la retina, nervio óptico y vasos sanguíneos del Ojo Izquierdo, detectando enfermedades como retinopatía o glaucoma. Ejemplo estándar: 'Discos de tamaño normal y forma ligeramente ovalada, exc: 0.4, ANR rosado con regla de ISNT limítrofe, atrofia pp leve, creciente escleral amplia, levemente inclinados, LC visible, No hemorragias, macula sana con buen brillo, retina adherida hasta donde se visualiza'",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "Plan dde Manejo",
+  description: "Detallan los pasos terapéuticos, diagnósticos o preventivos a seguir según la evaluación clínica, adaptados a las necesidades del paciente. Ejemplo estándar: 'Se recomienda control anual, se preescribe corrección óptica, se recomienda cicloplejia'.",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "Procedimientos Ordenados",
+  description: "Registro de procedimientos médicos, exámenes o tratamientos recomendados para el paciente. Ejemplo estándar: 'Control de presión intraocular cada 6 meses', 'ABERROMETRIA OCULAR; CANTIDAD: 1', 'BIOMETRIA OCULAR; CANTIDAD: 1'.",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "Medicamentos Ordenados",
+  description: "Registro de medicamentos recetados para el paciente, incluyendo nombre, cantidad, frecuencia, tiempo. Ejemplo estándar: 'BRIMOLOL COLIRIO CANTIDAD:4; POSOLOGIA: APLICAR EN EL OD 1 GOTA CADA 12 HORAS USO PERMANENTE; TIEMPO: 120 DIA(S)'.",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+},
+{
+  name: "Diagnósticos",
+  description: "Registro de los diagnósticos clínicos obtenidos tras la evaluación. Incluye un diagnóstico principal y hasta tres diagnósticos relacionados. Ejemplo estándar: Diagnóstico principal: 'Miopía'. Diagnósticos relacionados: 'Astigmatismo', 'Presbicia'.",
+  data_type: "string",
+  is_dropdown: false,
+  options: []
+}
+]
+
 
 function formatTime(seconds) {
   const hrs = String(Math.floor(seconds / 3600)).padStart(2, "0");
@@ -279,8 +401,9 @@ async function handleStopRecording() {
     formData.append("file", audioBlob, "audio.wav");
     if (customCheckbox.checked){
       formData.append("fields", JSON.stringify(fields_data_control));
-      
-
+    }
+    else if (TeranCheckbox.checked){
+      formData.append("fields", JSON.stringify(field_data_Teran))
     }
     else{formData.append("fields", JSON.stringify(fields_data))};
 
@@ -293,7 +416,7 @@ async function handleStopRecording() {
     });
 
     const token = "YOUR_AUTH_TOKEN";
-    const response = await fetch("http://localhost:8000/api/v1/extract?worker=8", {
+    const response = await fetch("https://76.69.193.101:44595/api/v1/extract?worker=8", {
       method: "POST",
       body: formData,
       headers: { Authorization: `Bearer ${token}` },
@@ -414,7 +537,7 @@ async function sendFields() {
 
     const token = "your-token-here"; // Usa el token real para la autenticación
 
-    const response = await fetch("http://localhost:8000/api/v1/feedback", {
+    const response = await fetch("https://76.69.193.101:44595/api/v1/feedback", {
       method: "POST",
       body: formData,
       headers: { Authorization: `Bearer ${token}` },
